@@ -128,6 +128,14 @@ public class Peca implements InterfaceDaPeca{
 	public int getOrdem(){
 		return ordem;
 	}
+	public void resetarCoordenadas(){
+		if(codigo == 1){
+			coordenadax = 4;
+		}else{
+			coordenadax = 3;
+		}
+		coordenaday = 0;
+	}
 	public int nLinhasNulasAbaixo(){
 		int contador = 0;
 		
