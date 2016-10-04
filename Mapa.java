@@ -3,7 +3,7 @@ import java.util.TimerTask;
 
 public class Mapa {
 	public boolean[][] mapa = new boolean[20][10];
-	private long periodo = 500;
+	private long periodo = 250;
 	private Peca pecaAtual, pecaProxima1, pecaProxima2, pecaProxima3, pecaSegurada;
 	private boolean inicializarPecas = true;
 	private boolean podePegarProximaPeca = true;
@@ -238,6 +238,13 @@ public class Mapa {
 				}
 			}
 			pecaAtual.girar();
+			for (int i = 0; i < pecaAtual.getOrdem(); i++){
+				for(int j = 0; j < pecaAtual.getOrdem(); j++){
+					if (pecaAtual.getMatriz()[i][j]) {
+						atualizarOMapa(pecaAtual.getCoordenadaY() + i, pecaAtual.getCoordenadaX() + j, pecaAtual.getMatriz()[i][j]);
+					}
+				}
+			}			
 		}	
 	}
 	public boolean verificaGiro(){ // verifica se a peca pode girar
