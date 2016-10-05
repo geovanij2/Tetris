@@ -165,5 +165,10 @@ public class Peca implements InterfaceDaPeca{
 		}
 		matriz = b;
 	}
-	
+	public void deslocarEsquerda(){
+		coordenadax--;
+	}
+	public void deslocarDireita(){
+		coordenadax++;
+	}
 }

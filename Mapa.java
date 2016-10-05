@@ -1,48 +1,56 @@
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Mapa {
+
+public class Mapa{
 	public boolean[][] mapa = new boolean[20][10];
-	private long periodo = 250;
+	private long periodo = 100;
 	private Peca pecaAtual, pecaProxima1, pecaProxima2, pecaProxima3, pecaSegurada;
 	private boolean inicializarPecas = true;
 	private boolean podePegarProximaPeca = true;
 	private boolean seguraPeca = true;
-	private boolean alternadorDoTimer = true;
 	Timer t;
 
-	int contador = 0;
+	int contador = 1;
 
 	Mapa() {
 		t = new Timer();
 		TimerTask cicloDoJogo = new TimerTask() {
 			@Override
 			public void run() {
+
 				// tudo que estiver aqui vai ser repetido em 1 segundo
-				/*if (contador % 10 == 0) {
-					derrubaPeca();
-				}*/				
-				
-				//System.out.println(contador);
-				/*if (contador % 4 == 0){
-					seguraPeca();
-				}*/
-
-				if (alternadorDoTimer) {
-					deslocarPecaNaMatrizPrincipalVertical();
-					pegarProximaPeca();
-					inicializarPecaNaMatrizPrincipal();
-					imprimirNoConsole();
-					alternadorDoTimer = false;
-				} else {
-					verificaLinhasCorretas();
-					alternadorDoTimer = true;
-					if(contador%5 == 0){
-
-					girarPeca();
-					}
-						contador ++;
+				pegarProximaPeca();
+				inicializarPecaNaMatrizPrincipal();
+				Random a = new Random();
+				int sorteio = a.nextInt(10);
+				if(sorteio == 0){
+					andarEsquerda();
+				};
+				if(sorteio == 1){
+					andarDireita();
 				}
+				if(sorteio == 2){
+					girarPeca();
+				}
+				if(sorteio == 3){
+					derrubaPeca();
+				}
+				if(sorteio == 4){
+					seguraPeca();
+				}
+				if (contador % 4 == 0) {
+					if (verificarSePecaPodeAndarVertical()) {
+						deslocarPecaNaMatrizPrincipalVertical();
+					} else {
+						verificaLinhasCorretas();
+					}
+				}
+				imprimirNoConsole();
+				contador++;
 			}
 
 		};
@@ -101,31 +109,27 @@ public class Mapa {
 		}
 		return pode;
 	}
+	
+	public void tirarPecaAtualDoMapa(){
+		for (int i = 0; i < pecaAtual.getOrdem(); i++) {
+			for (int j = 0; j < pecaAtual.getOrdem(); j++) {
+				if(pecaAtual.getMatriz()[i][j]){
+					atualizarOMapa(i+pecaAtual.getCoordenadaY(), j+pecaAtual.getCoordenadaX(), false);
+				}
+			}
+		}	
+	}
 
 	public void deslocarPecaNaMatrizPrincipalVertical() {
 		if (!inicializarPecas) {
-			if (verificarSePecaPodeAndarVertical()) {
-				for (int j = pecaAtual.getCoordenadaX(); j < pecaAtual.getCoordenadaX() + pecaAtual.getOrdem(); j++) {
-					// apaga a primeira linha da peca
-					atualizarOMapa(pecaAtual.getCoordenadaY(), j, false);
-				}
-				pecaAtual.descerPeca();
+			tirarPecaAtualDoMapa();
+			pecaAtual.descerPeca();
+			for(int i = 0; i < pecaAtual.getOrdem(); i++){
 				for (int j = 0; j < pecaAtual.getOrdem(); j++) {
-					boolean achou = false;
-					for (int i = pecaAtual.getOrdem() - 1; i >= 0; i--) {
-						if (pecaAtual.getMatriz()[i][j]) {
-							achou = true;
-						}
-						if (achou) {
-							atualizarOMapa(i + pecaAtual.getCoordenadaY(), pecaAtual.getCoordenadaX() + j,
-									pecaAtual.getMatriz()[i][j]);
-						}
+					if(pecaAtual.getMatriz()[i][j]){
+						atualizarOMapa(i+pecaAtual.getCoordenadaY(), j+pecaAtual.getCoordenadaX(), true);
 					}
 				}
-
-			} else {
-				podePegarProximaPeca = true;
-				seguraPeca = true;
 			}
 		}
 	}
@@ -151,7 +155,8 @@ public class Mapa {
 			for (int i = 0; i < pecaAtual.getOrdem(); i++) {
 				for (int j = 0; j < pecaAtual.getOrdem(); j++) {
 					if (pecaAtual.getMatriz()[i][j]) {
-						atualizarOMapa(pecaAtual.getCoordenadaY() + i, pecaAtual.getCoordenadaX() + j, false); // limpa antigo local da peca no mapa
+						atualizarOMapa(pecaAtual.getCoordenadaY() + i, pecaAtual.getCoordenadaX() + j, false);
+						// limpa antigo local da peca no mapa
 					}
 				}
 			}
@@ -206,6 +211,8 @@ public class Mapa {
 				deslocarUmaLinhaTudo(i);
 			}
 		}
+		podePegarProximaPeca = true;
+		seguraPeca = true;
 	}
 
 	public void excluirLinha(int i) {
@@ -224,47 +231,65 @@ public class Mapa {
 	}
 
 	public void derrubaPeca() {
-		 for (int i = 0; i < 20; i++) {
-		 	deslocarPecaNaMatrizPrincipalVertical();
-		 }
+		for (int i = pecaAtual.getCoordenadaY(); i < 20; i++) {
+			if(verificarSePecaPodeAndarVertical()){
+				deslocarPecaNaMatrizPrincipalVertical();
+			}
+		}
 	}
+
 	public void girarPeca() {
-		if(verificaGiro()) {	
-			for (int i = 0; i < pecaAtual.getOrdem(); i++){
-				for(int j = 0; j < pecaAtual.getOrdem(); j++){
+		if (verificaGiro()) {
+			for (int i = 0; i < pecaAtual.getOrdem(); i++) {
+				for (int j = 0; j < pecaAtual.getOrdem(); j++) {
 					if (pecaAtual.getMatriz()[i][j]) {
 						atualizarOMapa(pecaAtual.getCoordenadaY() + i, pecaAtual.getCoordenadaX() + j, false);
 					}
 				}
 			}
 			pecaAtual.girar();
-			for (int i = 0; i < pecaAtual.getOrdem(); i++){
-				for(int j = 0; j < pecaAtual.getOrdem(); j++){
+			for (int i = 0; i < pecaAtual.getOrdem(); i++) {
+				for (int j = 0; j < pecaAtual.getOrdem(); j++) {
 					if (pecaAtual.getMatriz()[i][j]) {
-						atualizarOMapa(pecaAtual.getCoordenadaY() + i, pecaAtual.getCoordenadaX() + j, pecaAtual.getMatriz()[i][j]);
+						atualizarOMapa(pecaAtual.getCoordenadaY() + i, pecaAtual.getCoordenadaX() + j,
+								pecaAtual.getMatriz()[i][j]);
 					}
 				}
-			}			
-		}	
+			}
+		}
 	}
-	public boolean verificaGiro(){ // verifica se a peca pode girar
+
+	public boolean verificaGiro() { // verifica se a peca pode girar
 		boolean resposta = true;
 		boolean[][] teste = pecaAtual.getMatriz();
 
-		int ordem = teste.length;//gira a peca p direita
+		int ordem = teste.length;// gira a peca p direita
 		boolean[][] b = new boolean[ordem][ordem];
-		for(int i = 0; i < teste.length; i++){
-			for(int j = 0; j < teste.length; j++){
-				b[j][ordem-1] = teste[i][j];
+		for (int i = 0; i < teste.length; i++) {
+			for (int j = 0; j < teste.length; j++) {
+				b[j][ordem - 1] = teste[i][j];
 			}
 			ordem--;
 		}
 		teste = b;
 
-		for (int i = 0; i < pecaAtual.getOrdem(); i ++){
+		for (int i = 0; i < pecaAtual.getOrdem(); i++) {
 			for (int j = 0; j < pecaAtual.getOrdem(); j++) {
-				if(!(teste[i][j] && pecaAtual.getMatriz()[i][j])){
-					if(teste[i][j] && mapa[pecaAtual.getCoordenadaY()+i][pecaAtual.getCoordenadaX()+j]){
+				if (teste[i][j]) { // se a peca girada tiver um true e ele
+									// estiver fora dos limites
+					if (pecaAtual.getCoordenadaY() + i >= 20) {
+						// vai ultrapassar o mapa em baixo
+						resposta = false;
+					}
+					if (pecaAtual.getCoordenadaX() + j >= 10 || pecaAtual.getCoordenadaX() + j < 0) {
+						resposta = false;
+					}
+				}
+				if (!(teste[i][j] && pecaAtual.getMatriz()[i][j]) && resposta) {
+					// se a peca girada continuar ocupando o espaco com true ele n faz
+					if (teste[i][j] && mapa[pecaAtual.getCoordenadaY() + i][pecaAtual.getCoordenadaX() + j]) {
+						// se no mapa ta true e a peca girada deu true eh pq
+						// sobrepos e nao pode girar
 						resposta = false;
 					}
 				}
@@ -272,4 +297,69 @@ public class Mapa {
 		}
 		return resposta;
 	}
+
+	public void andarEsquerda(){
+		boolean pode = true;
+		for (int i = 0; i < pecaAtual.getOrdem(); i++) {
+			boolean achoutrue = false;
+			for (int j = 0; j < pecaAtual.getOrdem(); j++) {
+				if (pecaAtual.getMatriz()[i][j]) {
+					achoutrue = true;
+				}
+				if (achoutrue) {
+					if (pecaAtual.getCoordenadaX() + j == 0) {
+						pode = false;
+					} else if (mapa[pecaAtual.getCoordenadaY() + i][pecaAtual.getCoordenadaX() + j - 1]) {
+						pode = false;
+					}
+					break;
+				}
+			}
+		}
+		
+		if(pode){
+			tirarPecaAtualDoMapa();
+			pecaAtual.deslocarEsquerda();
+			for(int i = 0; i < pecaAtual.getOrdem(); i++){
+				for(int j = 0; j < pecaAtual.getOrdem(); j++){
+					if(pecaAtual.getMatriz()[i][j]){
+						atualizarOMapa(pecaAtual.getCoordenadaY()+i, pecaAtual.getCoordenadaX()+j, true);
+					}
+				}
+			}
+		}
+	}
+	
+	public void andarDireita(){
+		boolean pode = true;
+		for (int i = 0; i < pecaAtual.getOrdem(); i++) {
+			boolean achoutrue = false;
+			for (int j = pecaAtual.getOrdem()-1; j >= 0; j--) {
+				if (pecaAtual.getMatriz()[i][j]) {
+					achoutrue = true;
+				}
+				if (achoutrue) {
+					if (pecaAtual.getCoordenadaX() + j == 9) {
+						pode = false;
+					} else if (mapa[pecaAtual.getCoordenadaY() + i][pecaAtual.getCoordenadaX() + j + 1]) {
+						pode = false;
+					}
+					break;
+				}
+			}
+		}
+		
+		if(pode){
+			tirarPecaAtualDoMapa();
+			pecaAtual.deslocarDireita();
+			for(int i = 0; i < pecaAtual.getOrdem(); i++){
+				for(int j = 0; j < pecaAtual.getOrdem(); j++){
+					if(pecaAtual.getMatriz()[i][j]){
+						atualizarOMapa(pecaAtual.getCoordenadaY()+i, pecaAtual.getCoordenadaX()+j, true);
+					}
+				}
+			}
+		}
+	}
+	 
 }
