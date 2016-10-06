@@ -43,7 +43,7 @@ public class Mapa{
 				if(sorteio == 4){
 					seguraPeca();
 				}
-				if(sorteio == 5){
+				if(sorteio == 11){
 					pausaJogo();
 					resumeJogo();
 				}
@@ -237,8 +237,10 @@ public class Mapa{
 
 	public void derrubaPeca() { // erro: quando a peça eh derrubada ela continua jogavel
 		for (int i = pecaAtual.getCoordenadaY(); i < 20; i++) {
-			if(verificarSePecaPodeAndarVertical()){
+			 if (verificarSePecaPodeAndarVertical()) {
 				deslocarPecaNaMatrizPrincipalVertical();
+			} else {
+				verificaLinhasCorretas();
 			}
 		}
 	}
