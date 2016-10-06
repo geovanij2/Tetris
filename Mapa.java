@@ -235,7 +235,7 @@ public class Mapa{
 		excluirLinha(0);
 	}
 
-	public void derrubaPeca() { // erro: quando a peça eh derrubada ela continua jogavel
+	public void derrubaPeca() { // erro: quando a peÃ§a eh derrubada ela continua jogavel
 		for (int i = pecaAtual.getCoordenadaY(); i < 20; i++) {
 			 if (verificarSePecaPodeAndarVertical()) {
 				deslocarPecaNaMatrizPrincipalVertical();
@@ -243,6 +243,8 @@ public class Mapa{
 				verificaLinhasCorretas();
 			}
 		}
+		pegarProximaPeca();
+		inicializarPecaNaMatrizPrincipal();
 	}
 
 	public void girarPeca() {
@@ -377,7 +379,7 @@ public class Mapa{
 	}
 	public void resumeJogo(){ // talvez deva construir um novo mapa com as mesmas carac do antigo
 		if (jogoPausado){
-		t.scheduleAtFixedRate(cicloDoJogo, 0, periodo); //inicia denovo o timer criado quando o jogo começa com os mesmos parametros
+		t.scheduleAtFixedRate(cicloDoJogo, 0, periodo); //inicia denovo o timer criado quando o jogo comeÃ§a com os mesmos parametros
 		// voltar para a tela do jogo - adicionar
 		System.out.println("jogoVoltou");
 		}
