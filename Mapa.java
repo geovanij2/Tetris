@@ -7,18 +7,19 @@ import java.util.TimerTask;
 
 public class Mapa{
 	public boolean[][] mapa = new boolean[20][10];
-	private long periodo = 100;
+	private long periodo = 200;
 	private Peca pecaAtual, pecaProxima1, pecaProxima2, pecaProxima3, pecaSegurada;
 	private boolean inicializarPecas = true;
 	private boolean podePegarProximaPeca = true;
 	private boolean seguraPeca = true;
 	Timer t;
-
+	TimerTask cicloDoJogo;
 	int contador = 1;
+	private boolean jogoPausado = false;
 
 	Mapa() {
 		t = new Timer();
-		TimerTask cicloDoJogo = new TimerTask() {
+		cicloDoJogo = new TimerTask() {
 			@Override
 			public void run() {
 
@@ -41,6 +42,10 @@ public class Mapa{
 				}
 				if(sorteio == 4){
 					seguraPeca();
+				}
+				if(sorteio == 5){
+					pausaJogo();
+					resumeJogo();
 				}
 				if (contador % 4 == 0) {
 					if (verificarSePecaPodeAndarVertical()) {
@@ -230,7 +235,7 @@ public class Mapa{
 		excluirLinha(0);
 	}
 
-	public void derrubaPeca() {
+	public void derrubaPeca() { // erro: quando a peça eh derrubada ela continua jogavel
 		for (int i = pecaAtual.getCoordenadaY(); i < 20; i++) {
 			if(verificarSePecaPodeAndarVertical()){
 				deslocarPecaNaMatrizPrincipalVertical();
@@ -361,5 +366,18 @@ public class Mapa{
 			}
 		}
 	}
-	 
+	public void pausaJogo(){
+		if (!jogoPausado){
+		t.cancel(); // cancela o timer, acho que n posso usar esse metodo
+		//acrescentar uma tela de pause??
+		System.out.println("pause");
+		}
+	}
+	public void resumeJogo(){ // talvez deva construir um novo mapa com as mesmas carac do antigo
+		if (jogoPausado){
+		t.scheduleAtFixedRate(cicloDoJogo, 0, periodo); //inicia denovo o timer criado quando o jogo começa com os mesmos parametros
+		// voltar para a tela do jogo - adicionar
+		System.out.println("jogoVoltou");
+		}
+	}
 }
