@@ -13,6 +13,9 @@ public class Tetris extends JFrame implements ActionListener {
 		Tetris game = new Tetris();
 		game.setLocationRelativeTo(null);
         game.setVisible(true);
+        
+        TAdapter t = new TAdapter();
+        t.keyPressed(e);
 	}
 
 	Tetris() {

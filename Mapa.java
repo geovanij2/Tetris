@@ -16,7 +16,7 @@ public class Mapa{
 	TimerTask cicloDoJogo;
 	int contador = 1;
 	private boolean jogoPausado = false;
-
+	
 	Mapa() {
 		t = new Timer();
 		cicloDoJogo = new TimerTask() {
