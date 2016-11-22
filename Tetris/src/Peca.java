@@ -1,5 +1,5 @@
 import java.util.Random;
-public class Peca implements InterfaceDaPeca{
+public class Peca{
 	private boolean[][] matriz;
 	private int codigo;
 	private int coordenadax = 3, coordenaday = 0;
@@ -117,7 +117,7 @@ public class Peca implements InterfaceDaPeca{
 		}
 		
 	}
-	@Override
+	
 	public boolean[][] getMatriz() {
 		return matriz.clone();
 	}
@@ -158,7 +158,7 @@ public class Peca implements InterfaceDaPeca{
 		return contador;
 		
 	}
-	@Override
+	
 	public void girar() {
 		int ordem = matriz.length;
 		boolean[][] b = new boolean[ordem][ordem];

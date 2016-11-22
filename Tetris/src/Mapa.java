@@ -6,7 +6,7 @@ import javax.swing.JPanel;
 public class Mapa {
 
 	private int[][] mapa = new int[20][10];
-	private long periodo = 20;
+	private long periodo = 10;
 	private Peca pecaAtual = null;
 	private Peca pecaProxima1 = null;
 	private Peca pecaProxima2 = null;
@@ -17,12 +17,13 @@ public class Mapa {
 	private boolean seguraPeca = true;
 	private Timer t;
 	private TimerTask cicloDoJogo;
-	private int contador = 1, score = 0, nivel = 1, numerolinhasquebradas = 0, line = 0;
+	private int contador = 1, score = 0, nivel = 0, numerolinhasquebradas = 0, line = 0;
 	private boolean jogoPausado = false;
 	private JPanel quadro;
 	public boolean deslocarParaE = false, deslocarParaD = false, derruba = false, gire = false, segure = false, deslocarParaB = false ;
 	
 	Mapa(JPanel quadro) {
+		
 		this.quadro = quadro;
 		t = new Timer();
 		pegarProximaPeca();
@@ -31,11 +32,11 @@ public class Mapa {
 			@Override
 			public void run() {
 				if (!jogoPausado) {
-					if (numerolinhasquebradas >= 10) {
+					if (numerolinhasquebradas >= 10 && nivel < 9) {
 						nivel++;
 						numerolinhasquebradas -= 10;
 					}
-					if (contador % (50 - nivel*5) == 0) {
+					if (contador % (100 - nivel*10) == 0) {
 						if (verificarSePecaPodeAndarVertical()) {
 							deslocarPecaNaMatrizPrincipalVertical();
 						} else {
@@ -179,8 +180,6 @@ public class Mapa {
 				}
 			}
 		}
-		if (nivel == 10)
-			acabou = true;
 		return acabou;
 	}
 

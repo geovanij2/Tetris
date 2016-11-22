@@ -13,12 +13,18 @@ public class Tetris extends JFrame  {
 		setResizable(false);
 		setTitle("Tetris");
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
+
+	    setContentPane(new TelaInicial(this));
 	   
+	}
+	public void jogoNormal(){
+		getContentPane().setFocusable(false);
 		PainelPrincipal quadro = new PainelPrincipal();
-	    setContentPane(quadro);
-	    quadro.setFocusable(true);
-	   
+		setContentPane(quadro);
+		quadro.setFocusable(true);
+		quadro.grabFocus();
+	    revalidate();
+	  
 	}
 
 
