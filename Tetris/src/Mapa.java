@@ -5,7 +5,7 @@ import javax.swing.JPanel;
 
 public class Mapa {
 
-	private int[][] mapa = new int[20][10];
+	private int[][] mapa;
 	private long periodo = 10;
 	private Peca pecaAtual = null;
 	private Peca pecaProxima1 = null;
@@ -18,13 +18,18 @@ public class Mapa {
 	private Timer t;
 	private TimerTask cicloDoJogo;
 	private int contador = 1, score = 0, nivel = 0, numerolinhasquebradas = 0, line = 0;
-	private boolean jogoPausado = false;
-	private JPanel quadro;
+	private boolean jogoPausado = false, modopersonalizado = false, win = false;
+	private PainelPrincipal quadro;
 	public boolean deslocarParaE = false, deslocarParaD = false, derruba = false, gire = false, segure = false, deslocarParaB = false ;
 	
-	Mapa(JPanel quadro) {
-		
+	Mapa(PainelPrincipal quadro) {
 		this.quadro = quadro;
+		if(quadro.getMatriz() == null){
+			mapa = new int[20][10];
+		}else{
+			mapa = quadro.getMatriz();
+			modopersonalizado = true;
+		}
 		t = new Timer();
 		pegarProximaPeca();
 		inicializarPecaNaMatrizPrincipal();
@@ -42,9 +47,17 @@ public class Mapa {
 						} else {
 							verificaLinhasCorretas();
 						}
-						pegarProximaPeca();
 						inicializarPecaNaMatrizPrincipal();
 					}else{
+						if(deslocarParaB){
+							if (verificarSePecaPodeAndarVertical()) {
+								deslocarPecaNaMatrizPrincipalVertical();
+							} else {
+								//verificaLinhasCorretas();
+								
+							}
+							deslocarParaB = false;
+						}
 						if(deslocarParaE){
 							andarEsquerda();
 							deslocarParaE = false;
@@ -65,14 +78,7 @@ public class Mapa {
 							seguraPeca();
 							segure = false;
 						}
-						if(deslocarParaB){
-							if (verificarSePecaPodeAndarVertical()) {
-								deslocarPecaNaMatrizPrincipalVertical();
-							} else {
-								verificaLinhasCorretas();
-							}
-							deslocarParaB = false;
-						}
+						
 					}
 					contador++;
 				}
@@ -112,6 +118,13 @@ public class Mapa {
 			} else {
 				t.cancel();
 				quadro.setFocusable(false);
+				Salvador a = new Salvador();
+				a.gravarRanking(score, quadro.tetris.getNome());
+				if(win){
+					quadro.tetris.telaInicial();
+				}else{
+					quadro.tetris.telaInicial();
+				}
 			}
 		}
 
@@ -176,8 +189,20 @@ public class Mapa {
 		for (int i = 0; i < pecaAtual.getOrdem(); i++) {
 			for (int j = 0; j < pecaAtual.getOrdem(); j++) {
 				if (pecaAtual.getMatriz()[i][j] && mapa[i][j + pecaAtual.getCoordenadaX()] != 0) {
-					acabou = true;
+					acabou = true; // e ele perdeu
 				}
+			}
+		}
+		if(modopersonalizado){ //se estiver no modo personalizado ganha se eliminar todas as pecas
+			int contador = 0;
+			for(int i = 0; i <= 19; i++){
+				for(int j = 0; j <= 9; j++){
+					contador += mapa[i][j];
+				}
+			}
+			if(contador == 0){
+				acabou = true; // e ele ganhou
+				win = true;
 			}
 		}
 		return acabou;
@@ -239,6 +264,7 @@ public class Mapa {
 			numerolinhasquebradas += contadordelinhas;
 			line += contadordelinhas;
 			podePegarProximaPeca = true;
+			pegarProximaPeca();
 			seguraPeca = true;
 		}
 	}
@@ -246,13 +272,13 @@ public class Mapa {
 	private void recalcularScore(int contadordelinhas) {
 		if (!jogoPausado) {
 			if (contadordelinhas == 1) {
-				score += 40 * nivel;
+				score += 40 * (nivel+1);
 			} else if (contadordelinhas == 2) {
-				score += 100 * nivel;
+				score += 100 * (nivel+1);
 			} else if (contadordelinhas == 3) {
-				score += 300 * nivel;
+				score += 300 * (nivel+1);
 			} else if (contadordelinhas == 4) {
-				score += 1200 * nivel;
+				score += 1200 * (nivel+1);
 			}
 		}
 	}
@@ -286,9 +312,9 @@ public class Mapa {
 					deslocarPecaNaMatrizPrincipalVertical();
 				} else {
 					verificaLinhasCorretas();
+					break;
 				}
 			}
-			pegarProximaPeca();
 			inicializarPecaNaMatrizPrincipal();
 		}
 	}

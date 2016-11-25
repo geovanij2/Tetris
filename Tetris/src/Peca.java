@@ -5,9 +5,7 @@ public class Peca{
 	private int coordenadax = 3, coordenaday = 0;
 	private int ordem;
 	private int girou = 0;
-	Peca(int codigo){
-		
-	}
+	
 	Peca(){
 		Random rand = new Random();
 		codigo = rand.nextInt(7)+1;

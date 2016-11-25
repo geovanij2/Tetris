@@ -9,12 +9,22 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 public class PainelPrincipal extends JPanel {
-	Image fundo, amarelo, laranja, roxo, azul, azulclaro, verde, vermelho;
-	Image[] imagens = new Image[8];
-	Mapa mapa;
-	JLabel score, line, level;
-
-	public PainelPrincipal() {
+	private Image fundo, amarelo, laranja, roxo, azul, azulclaro, verde, vermelho;
+	private Image[] imagens = new Image[8];
+	private Mapa mapa;
+	private JLabel score, line, level;
+	private int[][] matriz;
+	Tetris tetris;
+	
+	public int[][] getMatriz(){
+		return matriz;
+	}
+	public PainelPrincipal(Tetris tetris){
+		this(null, tetris);
+	}
+	public PainelPrincipal(int[][] matriz, Tetris tetris) {
+		this.tetris = tetris;
+		this.matriz = matriz;
 		setLayout(null);
 		mapa = new Mapa(this);
 		addKeyListener(new TAdapter(mapa));
@@ -63,7 +73,7 @@ public class PainelPrincipal extends JPanel {
 		for (int i = 0; i < 20; i++) {
 			for (int j = 0; j < 10; j++) {
 				if (matriz[i][j] != 0) {
-					g.drawImage(imagens[matriz[i][j]], j * 26 + 268, i * 26 + 40, this);
+					g.drawImage(imagens[matriz[i][j]], j * 26 + 270, i * 26 + 40, this);
 				}
 			}
 		}
@@ -119,7 +129,7 @@ public class PainelPrincipal extends JPanel {
 				}
 			}
 		}
-		
+
 	}
 
 }
